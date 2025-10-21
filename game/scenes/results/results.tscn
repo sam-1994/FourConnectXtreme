@@ -1,0 +1,86 @@
+[gd_scene load_steps=4 format=3 uid="uid://c6fojd6kgomdq"]
+
+[ext_resource type="PackedScene" uid="uid://np2v30m1u6ix" path="res://global/static_background.tscn" id="1_nbawk"]
+[ext_resource type="Script" uid="uid://bbs0bsrfwtt37" path="res://scenes/results/results.gd" id="1_vmlr1"]
+[ext_resource type="AudioStream" uid="uid://begklf3fm7vod" path="res://assets/sounds/Summarymusik.mp3" id="3_iaiks"]
+
+[node name="Results" type="CanvasLayer"]
+script = ExtResource("1_vmlr1")
+
+[node name="static_background" parent="." instance=ExtResource("1_nbawk")]
+
+[node name="result" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -223.5
+offset_top = -99.5
+offset_right = 223.5
+offset_bottom = 99.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 105
+
+[node name="winning_msg" type="Label" parent="result"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "<Win Message>"
+
+[node name="games_played" type="Label" parent="result"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 25
+text = "games_played: 50"
+
+[node name="summary" type="HBoxContainer" parent="result"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="player" type="VBoxContainer" parent="result/summary"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="player1_name" type="Label" parent="result/summary/player"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "player_1 wins:"
+
+[node name="player2_name" type="Label" parent="result/summary/player"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "player_2 wins:"
+
+[node name="wins" type="VBoxContainer" parent="result/summary"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="player1_wins" type="Label" parent="result/summary/wins"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "<player_1_wins>"
+
+[node name="player2_wins" type="Label" parent="result/summary/wins"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "<player2_wins>"
+
+[node name="continue_button" type="Button" parent="result"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+text = "Continue"
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_iaiks")
+volume_db = -5.0
+autoplay = true
+
+[connection signal="pressed" from="result/continue_button" to="." method="_on_continue_button_pressed"]

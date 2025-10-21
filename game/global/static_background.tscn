@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://np2v30m1u6ix"]
+
+[ext_resource type="Texture2D" uid="uid://bb0enihvspm0p" path="res://assets/graphics/background_pixelart.png" id="1_46vtt"]
+
+[node name="static_background" type="Node2D"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = -44.0
+offset_top = -52.0
+offset_right = 1492.0
+offset_bottom = 972.0
+scale = Vector2(0.77, 0.77)
+texture = ExtResource("1_46vtt")

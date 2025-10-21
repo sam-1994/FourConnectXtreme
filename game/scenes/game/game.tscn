@@ -1,0 +1,159 @@
+[gd_scene load_steps=15 format=3 uid="uid://dhavr3osjgtbs"]
+
+[ext_resource type="PackedScene" uid="uid://np2v30m1u6ix" path="res://global/static_background.tscn" id="1_0ygfq"]
+[ext_resource type="Script" uid="uid://bxocbpnvrfcde" path="res://scenes/game/game.gd" id="1_k4555"]
+[ext_resource type="PackedScene" uid="uid://c2mxv73tq8vh0" path="res://scenes/game/board.tscn" id="2_7jktm"]
+[ext_resource type="Script" uid="uid://bct0vk5egmndc" path="res://scenes/game/board.gd" id="3_ryrav"]
+[ext_resource type="Script" uid="uid://cyvgl38q01du1" path="res://scenes/game/coin_hover.gd" id="4_p63g6"]
+[ext_resource type="Texture2D" uid="uid://fpj25fy2fmg3" path="res://assets/graphics/coin_red.png" id="6_bdhmt"]
+[ext_resource type="Texture2D" uid="uid://b0spk6cqu684l" path="res://assets/graphics/coin_green.png" id="7_87uf6"]
+[ext_resource type="Texture2D" uid="uid://cera7x3ixcpjg" path="res://assets/graphics/pause.png" id="8_87uf6"]
+[ext_resource type="AudioStream" uid="uid://bvs3fyb3vn38f" path="res://assets/sounds/Gamemusik.mp3" id="10_4j704"]
+[ext_resource type="PackedScene" uid="uid://dm1c8r4lgl7he" path="res://scenes/util/sound.tscn" id="11_kp23o"]
+[ext_resource type="PackedScene" uid="uid://bq45ucvgv7trw" path="res://scenes/util/speed.tscn" id="12_5jirj"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_7jktm"]
+
+[sub_resource type="SystemFont" id="SystemFont_7jktm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ryrav"]
+font = SubResource("SystemFont_7jktm")
+font_size = 25
+
+[node name="Game" type="CanvasLayer"]
+script = ExtResource("1_k4555")
+
+[node name="Board" parent="." instance=ExtResource("2_7jktm")]
+script = ExtResource("3_ryrav")
+
+[node name="static_background" parent="." instance=ExtResource("1_0ygfq")]
+
+[node name="CoinHover" type="TextureRect" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 512.0
+offset_top = 292.0
+offset_right = 576.0
+offset_bottom = 356.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+texture = SubResource("CompressedTexture2D_7jktm")
+script = ExtResource("4_p63g6")
+
+[node name="GameLeftLabel" type="Label" parent="."]
+offset_left = 437.0
+offset_top = 28.0
+offset_right = 630.0
+offset_bottom = 97.0
+text = "Games left:"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GamesLeft" type="Label" parent="."]
+offset_left = 533.0
+offset_top = 28.0
+offset_right = 726.0
+offset_bottom = 97.0
+text = "10"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Player1" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 92.0
+offset_top = 390.0
+offset_right = 285.0
+offset_bottom = 459.0
+text = "Player 1"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+
+[node name="Player1Score" type="Label" parent="."]
+offset_left = 92.0
+offset_top = 435.0
+offset_right = 285.0
+offset_bottom = 508.0
+text = "0
+"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+
+[node name="Player2" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 807.0
+offset_top = 390.0
+offset_right = 1000.0
+offset_bottom = 459.0
+text = "Player 2"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+
+[node name="Player2Score" type="Label" parent="."]
+offset_left = 807.0
+offset_top = 435.0
+offset_right = 1000.0
+offset_bottom = 508.0
+text = "0
+"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+
+[node name="PlayerOneCoin" type="Sprite2D" parent="."]
+position = Vector2(188, 345)
+texture = ExtResource("6_bdhmt")
+
+[node name="PlayerTwoCoin" type="Sprite2D" parent="."]
+position = Vector2(902, 345)
+texture = ExtResource("7_87uf6")
+
+[node name="PlayPause" type="TextureButton" parent="."]
+unique_name_in_owner = true
+process_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -69.0
+offset_top = 24.0
+offset_right = -5.0
+offset_bottom = 88.0
+grow_horizontal = 0
+scale = Vector2(0.7, 0.7)
+texture_normal = ExtResource("8_87uf6")
+
+[node name="PauseLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -65.0
+offset_top = 95.0
+offset_right = 65.0
+offset_bottom = 158.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 45
+text = "Pause"
+
+[node name="PlayerTimout" type="Timer" parent="."]
+unique_name_in_owner = true
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("10_4j704")
+volume_db = -7.0
+autoplay = true
+max_polyphony = 4
+parameters/looping = true
+
+[node name="Sound" parent="." instance=ExtResource("11_kp23o")]
+
+[node name="Speed" parent="." instance=ExtResource("12_5jirj")]
+
+[connection signal="pressed" from="PlayPause" to="." method="_on_play_pause_pressed"]

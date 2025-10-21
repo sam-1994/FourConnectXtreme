@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Client": {
+      "commandName": "Project",
+      "commandLineArgs": "-n MyAi -s localhost -p 5051"
+    }
+  }
+}
