@@ -80,9 +80,12 @@ Das Game zeigt beide Player und welche Chipfarbe zu welchem Player gehört. In d
 Geschwindigkeit des Spiels von x0.5 bis x4.0 einstellen. In der oberen rechten Ecke kannst du das Spiel jederzeit
 pausieren.
 
-### Die Daten
+### Die Daten vom Server
 
-Der Server überträgt nach jedem gespielten Spielstein die folgenden Daten (PlayState):
+Der Server überträgt initial eine Ping Message zum Verbindungsaufbau. 
+**Diese ist für den Bot nicht weiter relevant.**
+
+Anschließend überträgt der Server  nach jedem gespielten Spielstein die folgenden Daten (PlayState):
 
 **Überblick**\
 PlayState sind JSON-Daten, die den Zustand der Partie zum aktuellen Zeitpunkt liefern.\
@@ -96,7 +99,7 @@ Die JSON-Daten bestehen aus 5 Hauptbereichen:
 4) bombs: Die Daten der Bomben, die sich im Spiel befinden
 5) board: Aktueller Zustand des Spielbretts mit den entsprechenden Spielsteinen darin
 
-**Detaillierte Beschreibung der Attribute**\
+**Detaillierte Beschreibung der Attribute** 
 
 - bot: (Typ: String) \
   Beschreibung: Name des Bots für den die Daten bestimmt sind\
@@ -148,7 +151,7 @@ Die JSON-Daten bestehen aus 5 Hauptbereichen:
 ````
 
 **Boarddaten zum Spielfeld**
-Die daten aus dem "board"-Feld kann man sich wie folgt vorstellen:
+Die Daten aus dem "board"-Feld kann man sich wie folgt vorstellen:
 
 ```  
        j=0   j=1   j=2   j=3   j=4   j=5   j=6 
@@ -162,6 +165,12 @@ i=5: [  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ]
 
 das dazugehörige Spielfeld sieht wie folgt aus:\
 ![FourConnectIngame](FourConnectIngame.png)
+
+### Antwort des Clients an den Server
+
+Die Bot-Schnittstelle sendet als Ergebnis den nächsten Zug des Bots an den Server.  (Siehe Play Funktion)
+Dieser wird durch die ausgewählte Spalte im Spielfeld dargestellt (Integer von 0 bis 6)
+Weitere Infos dazu in den Clients selbst. 🙂
 
 ### Achtung vor den Bomben
 
@@ -203,6 +212,8 @@ das dazugehörige Spielfeld sieht wie folgt aus:\
 
 
 ## Clients verbinden
-Jeder client hat eine eigene Readme 😉
+Jeder Client hat eine eigene Readme 😉
+
+**Achtung: Bitte verwendet keine Leerzeichen (Spaces) in euren Botnamen. Nutzt dafür z. B. Unterstriche _ 🙂**
 
 # Keep Coding 🫳

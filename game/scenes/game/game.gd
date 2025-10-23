@@ -116,11 +116,13 @@ func finish():
 	board.init()
 	for child in get_children():
 		if child is Coin or child is Bomb:
-			child.queue_free()
+			child.free()
 	if GameManager.games_left > 0:
 		start()
 		_send_update_state()
 	else:
+		paused = false
+		get_tree().paused = false
 		get_tree().change_scene_to_file("res://scenes/results/results.tscn")
 
 func _spawn(position: Vector2, column: int) -> void:
