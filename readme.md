@@ -24,6 +24,7 @@ hervorzugehen! :)
 - Der Bot ist lauffähig und bedient korrekt die Schnittstelle
 - Der Bot spielt einen gültigen Zug innerhalb einer festgelegten Zeit (Timeout = 700 Millisekunden)
 - Der Bot ist von dir
+- Deine Einreichung überschreitet nicht ein Limit von 2MB für Code + Config des Bots
 
 ### Was beinhaltet das Repository?
 
