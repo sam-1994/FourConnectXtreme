@@ -197,6 +197,8 @@ Weitere Infos dazu in den Clients selbst. 🙂
 - Anschließend wird der 1. Wurf nach jeder Partie gewechselt
 - Beispiel: Spieler 1 beginnt in Runde 1 mit dem 1. Wurf, so hat Spieler 1 auch den 1. Wurf in jeder ungeraden Partie
   eines Matches. Spieler 2 dem zur Folge in jeder geraden Partie des Matches.
+- Sollte eine Bombe die Situation erzeugen, dass beide vier Steine in einer Reihe erhalten, so bekommt jeder Spieler einen Punkt
+- Resultiert aus vorherigem Punkt ein Gleichstand in einem Match, wir es ein "Sudden Death" geben  
 
 ### Wie gewinne ich?
 
