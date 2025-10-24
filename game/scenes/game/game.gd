@@ -8,11 +8,11 @@ var texture_pause = preload("res://assets/graphics/pause.png")
 
 @onready var coin_hover: TextureRect = $CoinHover
 @onready var board: Board = $Board
-@onready var player_one_name: Label = %Player1
-@onready var player_two_name: Label = %Player2
+@onready var player_one_name: Label = %PlayerOne
+@onready var player_two_name: Label = %PlayerTwo
 
-@onready var player_1_score_label: Label = $Player1Score
-@onready var player_2_score_label: Label = $Player2Score
+@onready var player_1_score_label: Label = $VBoxPlayer1/Player1Score
+@onready var player_2_score_label: Label = $VBoxPlayer2/Player2Score
 @onready var games_left_label: Label = $GamesLeft
 
 @onready var play_pause: TextureButton = %PlayPause
@@ -40,8 +40,8 @@ func _ready() -> void:
 	_game_reset()
 	games_left_label.text = str(GameManager.games_left)
 	coin_hover.new_spawn_pos.connect(_spawn)
-	player_one_name.set_text(WebsocketServer.get_player_one().name)
-	player_two_name.set_text(WebsocketServer.get_player_two().name)
+	Designer.set_label_text(player_one_name, WebsocketServer.get_player_one().name, 30, 250.0)
+	Designer.set_label_text(player_two_name, WebsocketServer.get_player_two().name, 30, 250.0)
 	_send_update_state()
 
 	WebsocketServer.player_timeout.timeout.connect(player_got_timeout)
