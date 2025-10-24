@@ -47,7 +47,7 @@ func _ready() -> void:
 	WebsocketServer.player_timeout.timeout.connect(player_got_timeout)
 
 func player_got_timeout():
-	_game_is_over(int(WebsocketServer.player_one_active) + 1)
+	_game_is_over([int(WebsocketServer.player_one_active) + 1])
 
 func _game_reset():
 	current_turn = 1
@@ -141,7 +141,7 @@ func _spawn(position: Vector2, column: int) -> void:
 		new_coin.end_movement.connect(_update_game)
 	else:
 		new_coin.is_wrong()
-		_game_is_over(int(not WebsocketServer.player_one_active) + 1)
+		_game_is_over([int(not WebsocketServer.player_one_active) + 1])
 		player_1_score_label.text = str(GameManager.player_1_score)
 		player_2_score_label.text = str(GameManager.player_2_score)
 		games_left_label.text = str(GameManager.games_left)
@@ -183,10 +183,10 @@ func _detonate(row: int, col: int):
 		
 	await all_explosions_done
 	_update_coin_rows(exploding_coins)
-	var winner = board.detect_winner_full_scan()
-	if winner != 0:
+	var winners = board.detect_winner_full_scan()
+	if winners.size() > 0:
 		_highlight(board.get_winning_coins())
-		_game_is_over(winner)
+		_game_is_over(winners)
 		
 	GameManager.setState(GameManager.GameState.NEXT)
 	if WebsocketServer.player_one_active and WebsocketServer.is_player_one_bot() or not WebsocketServer.player_one_active and WebsocketServer.is_player_two_bot():
@@ -205,7 +205,7 @@ func _update_game(column: int):
 	var won = board.is_winner(player_id)
 	if won:
 		_highlight(board.get_winning_coins())
-		_game_is_over(player_id)
+		_game_is_over([player_id])
 	else:
 		_next()
 	
@@ -241,8 +241,8 @@ func _on_play_pause_pressed() -> void:
 		pause_label.visible = false
 		play_pause.texture_normal = texture_pause
 	
-func _game_is_over(player_id: int) -> void:
-	GameManager.won(player_id)
+func _game_is_over(player_ids: Array[int]) -> void:
+	GameManager.won(player_ids)
 	player_1_score_label.text = str(GameManager.player_1_score)
 	player_2_score_label.text = str(GameManager.player_2_score)
 	games_left_label.text = str(GameManager.games_left)
