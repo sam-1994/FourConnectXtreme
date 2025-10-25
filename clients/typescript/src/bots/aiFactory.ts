@@ -1,10 +1,12 @@
 import { BotAI } from './botAI';
 import { RandomAI } from './randomAI';
-import { MyAI } from './myAI';
+import { SamuAi1 } from './samu-ai-1';
+import { SamuAi2 } from './samu-ai-2';
 
 const aiBots: Record<string, new () => BotAI> = {
   'RandomAI': RandomAI,
-  'MyAI': MyAI,
+  'SamuAi1': SamuAi1,
+  'SamuAi2': SamuAi2,
 };
 
 export function aiFactory(botSelection: string = 'MyAI'): BotAI {
