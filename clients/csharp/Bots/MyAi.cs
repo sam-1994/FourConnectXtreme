@@ -10,11 +10,11 @@ namespace CsClient.Bots
         public string Name { get; }
 
         /// <inheritdoc/>
-        public int Play(PlayState? playState)
+        public int Play(PlayState playState)
         {
             if (_myCoinId == -1)
             {
-                _myCoinId = playState!.CoinId;
+                _myCoinId = playState.CoinId;
             }
 
             // put your logic here
