@@ -2,11 +2,18 @@
 using CsClient.Bots.Internal;
 using CsClient.CsharpClient;
 
-Parser.Default.ParseArguments<Options>(args)
-    .WithParsed(Run)
-    .WithNotParsed(OnError);
+var result = Parser.Default.ParseArguments<Options>(args);
 
-static async void Run(Options o)
+if (result.Tag == ParserResultType.NotParsed)
+{
+    OnError(result.Errors);
+    return -1;
+}
+
+await Run(result.Value);
+return 0;
+
+static async Task Run(Options o)
 {
 #if DEBUG
     Console.WriteLine("Debug Mode");
@@ -19,9 +26,9 @@ static async void Run(Options o)
         BotFactory.GetBotByName(o.Name!));
 
     myClient.OnOpen += (s, e) => { Console.WriteLine("Connected!"); };
-    myClient.OnClose += (s, e) =>
+    myClient.OnClose += async (s, e) =>
     {
-        myClient.Disconnect().Wait();
+        await myClient.Disconnect();
         Console.WriteLine("Closed");
     };
 

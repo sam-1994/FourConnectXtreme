@@ -4,7 +4,7 @@ namespace CsClient.Bots
 {
     public class MyAi : IBot
     {
-        private int MyCoinID = -1;
+        private int _myCoinId = -1;
 
         /// <inheritdoc/>
         public string Name { get; }
@@ -12,9 +12,9 @@ namespace CsClient.Bots
         /// <inheritdoc/>
         public int Play(PlayState? playState)
         {
-            if (MyCoinID == -1)
+            if (_myCoinId == -1)
             {
-                MyCoinID = playState!.CoinId;
+                _myCoinId = playState!.CoinId;
             }
 
             // put your logic here
