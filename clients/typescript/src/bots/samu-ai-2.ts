@@ -12,12 +12,15 @@ export interface Forecast {
 export class SamuAi2 implements BotAI {
   private name: string = 'SamuAi2';
 
+  private forecastCache = new Map<string, Forecast>();
+  private scoreCache = new Map<string, number>();
+
   getName(): string {
     return this.name;
   }
 
   play(currentGameState: PlayState): number {
-    const bestForecast = this.forecastBestPlayState(currentGameState, currentGameState.coin_id, 6);
+    const bestForecast = this.forecastBestPlayState(currentGameState, currentGameState.coin_id, 5);
     if (!bestForecast || bestForecast.turns.length === 0) {
       return Math.floor(Math.random() * 7);
     }
@@ -25,17 +28,28 @@ export class SamuAi2 implements BotAI {
     return bestForecast.turns[0].column;
   }
 
+  private getStateKey(state: PlayState, player: number, iterations: number): string {
+    return `${player}-${iterations}-${JSON.stringify(state.board)}-${JSON.stringify(state.bombs)}`;
+  }
+
   forecastBestPlayState(state: PlayState, player: number, iterations: number): Forecast | null {
+    const cacheKey = this.getStateKey(state, player, iterations);
+    if (this.forecastCache.has(cacheKey)) {
+      return this.forecastCache.get(cacheKey)!;
+    }
+
     if (iterations === 0 || this.checkWinner(state) !== 0) {
       const myScore = this.calculateBoardScore(state, player);
       const opponentScore = this.calculateBoardScore(state, 3 - player);
-      return {
+      const result = {
         turns: [],
         state: state,
         score: myScore - opponentScore,
         myScore,
         opponentScore,
       };
+      this.forecastCache.set(cacheKey, result);
+      return result;
     }
 
     const forecasts: (Forecast | null)[] = [];
@@ -56,8 +70,8 @@ export class SamuAi2 implements BotAI {
           });
         } else {
           const nextForecast = this.forecastBestPlayState(nextState, 3 - player, iterations - 1) as Forecast;
-          const myScore = this.calculateBoardScore(nextForecast.state, player);
-          const opponentScore = this.calculateBoardScore(nextForecast.state, 3 - player);
+          const myScore = nextForecast ? this.calculateBoardScore(nextForecast.state, player) : 0;
+          const opponentScore =  nextForecast ? this.calculateBoardScore(nextForecast.state, 3 - player) : Infinity;
           const scoreDiff = myScore - opponentScore;
           forecasts.push({
             turns: [{player, column}, ...nextForecast.turns],
@@ -72,7 +86,7 @@ export class SamuAi2 implements BotAI {
       }
     }
 
-    return forecasts.reduce((
+    const forecast = forecasts.reduce((
       bestForecast,
       currentForecast,
       index
@@ -96,7 +110,12 @@ export class SamuAi2 implements BotAI {
       } else {
         return bestForecast;
       }
-    });
+    }, null);
+
+    if(forecast) {
+      this.forecastCache.set(cacheKey, forecast);
+    }
+    return forecast;
   }
 
   calculateNextState(state: PlayState, column: number, player: number): PlayState | null {
@@ -221,8 +240,14 @@ export class SamuAi2 implements BotAI {
   }
 
   calculateBoardScore(state: PlayState, player: number): number {
+    const cacheKey = `${player}-${JSON.stringify(state.board)}-${JSON.stringify(state.bombs)}`;
+    if (this.scoreCache.has(cacheKey)) {
+      return this.scoreCache.get(cacheKey)!;
+    }
+
     const checkWinner = this.checkWinner(state);
     if (checkWinner === player || checkWinner === 3) {
+      this.scoreCache.set(cacheKey, 10000);
       return 10000;
     }
 
@@ -325,6 +350,8 @@ export class SamuAi2 implements BotAI {
         }
       }
     }
+
+    this.scoreCache.set(cacheKey, score);
     return score;
   }
 }
