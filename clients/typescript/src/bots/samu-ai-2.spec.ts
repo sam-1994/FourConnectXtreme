@@ -611,7 +611,7 @@ describe('SamuAI-2 Bot', () => {
       ]);
     });
 
-    it('returns null for overflow turns', () => {
+    it('should return null for overflow turns', () => {
       const board = [
         [0, 0, 2, 1, 0, 0, 0],
         [0, 0, 1, 2, 0, 0, 0],
@@ -622,6 +622,227 @@ describe('SamuAI-2 Bot', () => {
       ];
       const nextState = ai.calculateNextState(makeState(board), 2, 1) as PlayState;
       expect(nextState).toBeNull();
+    });
+
+    it('should respect the determination of bombs', () => {
+      const board = [
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 0, 99, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 1,
+          col: 2,
+          explode_in_round: 1
+        }]),
+        0,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [2, 1, 0, 1, 1, 2, 0],
+        [1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]);
+    });
+
+    it('should add the coin before the bomb explosion', () => {
+      const board = [
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 0, 99, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 1,
+          col: 2,
+          explode_in_round: 1
+        }]),
+        2,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [2, 1, 0, 1, 1, 2, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]);
+    });
+
+    it('should check the win before the bomb explosion', () => {
+      const board = [
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 0, 99, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 1,
+          col: 2,
+          explode_in_round: 1
+        }]),
+        3,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([{
+        row: 1,
+        col: 2,
+        explode_in_round: 0
+      }]);
+      expect(nextState.board).toEqual([
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 0, 99, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]);
+    });
+
+    it('should let coins fall down after bomb explosion', () => {
+      const board = [
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 2, 99, 1, 0, 0, 0],
+        [0, 1, 1, 2, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 1,
+          col: 2,
+          explode_in_round: 1
+        }]),
+        2,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [2, 1, 2, 1, 1, 2, 0],
+        [0, 1, 2, 2, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]);
+    });
+
+    it('should work if bombs are at left border', () => {
+      const board = [
+        [2, 1, 2, 1, 1, 2, 0],
+        [99, 2, 2, 1, 0, 0, 0],
+        [2, 1, 1, 2, 0, 0, 0],
+        [2, 0, 2, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 1,
+          col: 0,
+          explode_in_round: 1
+        }]),
+        0,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [2, 1, 2, 1, 1, 2, 0],
+        [1, 1, 2, 1, 0, 0, 0],
+        [0, 0, 1, 2, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]);
+    });
+
+    it('should work if bombs are at bottom right border', () => {
+      const board = [
+        [1, 1, 2, 1, 1, 2, 99],
+        [2, 2, 2, 1, 0, 0, 2],
+        [2, 1, 1, 2, 0, 0, 2],
+        [0, 0, 2, 0, 0, 0, 1],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 0,
+          col: 6,
+          explode_in_round: 1
+        }]),
+        2,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [1, 1, 2, 1, 1, 0, 2],
+        [2, 2, 2, 1, 0, 0, 1],
+        [2, 1, 1, 2, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0],
+      ]);
+    });
+    it('should work if bombs are at top border', () => {
+      const board = [
+        [1, 1, 2, 1, 1, 2, 2],
+        [2, 2, 2, 1, 0, 0, 2],
+        [2, 1, 1, 2, 0, 0, 2],
+        [0, 0, 2, 0, 0, 0, 1],
+        [0, 0, 2, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 99],
+      ];
+      const nextState = ai.calculateNextState(
+        makeState(board, [{
+          row: 5,
+          col: 6,
+          explode_in_round: 1
+        }]),
+        2,
+        1,
+      ) as PlayState;
+
+      expect(nextState.bombs).toEqual([]);
+      expect(nextState.board).toEqual([
+        [1, 1, 2, 1, 1, 2, 2],
+        [2, 2, 2, 1, 0, 0, 2],
+        [2, 1, 1, 2, 0, 0, 2],
+        [0, 0, 2, 0, 0, 0, 1],
+        [0, 0, 2, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0],
+      ]);
+      // expect(nextState.board).toEqual([
+      //   [1, 1, 2, 1, 1, 0, 2],
+      //   [2, 2, 2, 1, 0, 0, 1],
+      //   [2, 1, 1, 2, 0, 0, 1],
+      //   [0, 0, 2, 0, 0, 0, 99],
+      //   [0, 0, 2, 0, 0, 0, 0],
+      //   [0, 0, 1, 0, 0, 0, 0]
+      // ]);
     });
   })
 

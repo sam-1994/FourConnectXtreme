@@ -115,52 +115,58 @@ export class SamuAi2 implements BotAI {
     }
     newState.round += 1;
 
+    for (const bomb of newState.bombs) {
+      if (bomb.explode_in_round > 0) {
+        bomb.explode_in_round -= 1;
+      }
+    }
+
     if (this.checkWinner(newState) !== 0) {
       return newState;
     }
 
     for (const bomb of newState.bombs) {
-      if (bomb.explode_in_round === 0) {
+      if (bomb.explode_in_round > 0) {
         continue;
       }
-      bomb.explode_in_round -= 1;
 
-      if (bomb.explode_in_round === 0) {
-        const bombColumn = bomb.col;
-        const bombRow = bomb.row;
+      const bombColumn = bomb.col;
+      const bombRow = bomb.row;
 
-        const explodingRowMin = Math.max(0, bombRow - 1);
-        const explodingRowMax = Math.min(newState.board.length - 1, bombRow + 1);
-        const explodingColumnMin = Math.max(0, bombColumn - 1);
-        const explodingColumnMax = Math.min(newState.board[0].length - 1, bombColumn + 1);
+      const explodingRowMin = Math.max(0, bombRow - 1);
+      const explodingRowMax = Math.min(newState.board.length - 1, bombRow + 1);
+      const explodingColumnMin = Math.max(0, bombColumn - 1);
+      const explodingColumnMax = Math.min(newState.board[0].length - 1, bombColumn + 1);
 
-        for (let row = explodingRowMin; row <= explodingRowMax; row++) {
-          newState.board[row][bombColumn] = 0;
-        }
-        for (let col = explodingColumnMin; col <= explodingColumnMax; col++) {
-          newState.board[bombRow][col] = 0;
-        }
+      for (let row = explodingRowMin; row <= explodingRowMax; row++) {
+        newState.board[row][bombColumn] = 0;
+      }
+      for (let col = explodingColumnMin; col <= explodingColumnMax; col++) {
+        newState.board[bombRow][col] = 0;
+      }
 
-        if (explodingColumnMin < bombColumn) {
-          for (let r = bombRow; r < newState.board.length - 1; r++) {
-            newState.board[r][explodingColumnMin] = newState.board[r + 1][explodingColumnMin];
-            newState.board[r + 1][explodingColumnMin] = 0;
-          }
-        }
-
-        let bombColumnDrop = bombRow === 0 ? 2 : 3;
-        for (let r = explodingRowMin; r < newState.board.length - bombColumnDrop; r++) {
-          newState.board[r][bombColumn] = newState.board[r + bombColumnDrop][bombColumn];
-          newState.board[r + bombColumnDrop][bombColumn] = 0;
-        }
-
-        if (explodingColumnMax < bombColumn) {
-          for (let r = bombRow; r < newState.board.length - 1; r++) {
-            newState.board[r][explodingColumnMax] = newState.board[r + 1][explodingColumnMax];
-            newState.board[r + 1][explodingColumnMax] = 0;
-          }
+      if (explodingColumnMin < bombColumn) {
+        for (let r = bombRow; r < newState.board.length - 1; r++) {
+          newState.board[r][explodingColumnMin] = newState.board[r + 1][explodingColumnMin];
+          newState.board[r + 1][explodingColumnMin] = 0;
         }
       }
+
+      let bombColumnDrop = bombRow === 0 ? 2 : 3;
+      for (let r = explodingRowMin; r < newState.board.length - bombColumnDrop; r++) {
+        newState.board[r][bombColumn] = newState.board[r + bombColumnDrop][bombColumn];
+        newState.board[r + bombColumnDrop][bombColumn] = 0;
+      }
+
+      if (bombColumn < explodingColumnMax) {
+        for (let r = bombRow; r < newState.board.length - 1; r++) {
+          newState.board[r][explodingColumnMax] = newState.board[r + 1][explodingColumnMax];
+          newState.board[r + 1][explodingColumnMax] = 0;
+        }
+      }
+
+      const bombIndex = newState.bombs.indexOf(bomb);
+      newState.bombs.splice(bombIndex, 1);
     }
     return newState;
   }
