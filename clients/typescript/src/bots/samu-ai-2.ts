@@ -20,7 +20,7 @@ export class SamuAi2 implements BotAI {
     console.log('--------------------------------------')
     currentGameState.board.forEach((row) => console.log(row.join(' ')));
 
-    const bestForecast = this.forecastBestPlayState(currentGameState, currentGameState.coin_id, 4);
+    const bestForecast = this.forecastBestPlayState(currentGameState, currentGameState.coin_id, 6);
     if (!bestForecast || bestForecast.turns.length === 0) {
       return Math.floor(Math.random() * 7);
     }
