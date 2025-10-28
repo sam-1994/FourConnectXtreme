@@ -36,6 +36,7 @@ hervorzugehen! :)
     - Rust
     - Go
     - TypeScript
+    - Dart
 
 ## Das Game starten
 
