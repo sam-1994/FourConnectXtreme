@@ -66,53 +66,72 @@ label_settings = SubResource("LabelSettings_ryrav")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Player1" type="Label" parent="."]
-unique_name_in_owner = true
-offset_left = 92.0
-offset_top = 390.0
-offset_right = 285.0
-offset_bottom = 459.0
-text = "Player 1"
-label_settings = SubResource("LabelSettings_ryrav")
-horizontal_alignment = 1
+[node name="VBoxPlayer1" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_left = 0.146
+anchor_top = 0.482
+anchor_right = 0.146
+anchor_bottom = 0.482
+offset_left = -158.848
+offset_top = 11.672
+offset_right = 159.152
+offset_bottom = 190.672
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
 
-[node name="Player1Score" type="Label" parent="."]
-offset_left = 92.0
-offset_top = 435.0
-offset_right = 285.0
-offset_bottom = 508.0
-text = "0
-"
-label_settings = SubResource("LabelSettings_ryrav")
-horizontal_alignment = 1
-
-[node name="Player2" type="Label" parent="."]
-unique_name_in_owner = true
-offset_left = 807.0
-offset_top = 390.0
-offset_right = 1000.0
-offset_bottom = 459.0
-text = "Player 2"
-label_settings = SubResource("LabelSettings_ryrav")
-horizontal_alignment = 1
-
-[node name="Player2Score" type="Label" parent="."]
-offset_left = 807.0
-offset_top = 435.0
-offset_right = 1000.0
-offset_bottom = 508.0
-text = "0
-"
-label_settings = SubResource("LabelSettings_ryrav")
-horizontal_alignment = 1
-
-[node name="PlayerOneCoin" type="Sprite2D" parent="."]
-position = Vector2(188, 345)
+[node name="TextureRect" type="TextureRect" parent="VBoxPlayer1"]
+layout_mode = 2
+size_flags_horizontal = 4
 texture = ExtResource("6_bdhmt")
 
-[node name="PlayerTwoCoin" type="Sprite2D" parent="."]
-position = Vector2(902, 345)
+[node name="PlayerOne" type="Label" parent="VBoxPlayer1"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Player 1"
+horizontal_alignment = 1
+
+[node name="Player1Score" type="Label" parent="VBoxPlayer1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxPlayer2" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_left = 0.853
+anchor_top = 0.482
+anchor_right = 0.853
+anchor_bottom = 0.482
+offset_left = -159.264
+offset_top = 11.672
+offset_right = 158.736
+offset_bottom = 190.672
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxPlayer2"]
+layout_mode = 2
+size_flags_horizontal = 4
 texture = ExtResource("7_87uf6")
+
+[node name="PlayerTwo" type="Label" parent="VBoxPlayer2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Player 2"
+horizontal_alignment = 1
+
+[node name="Player2Score" type="Label" parent="VBoxPlayer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PlayPause" type="TextureButton" parent="."]
 unique_name_in_owner = true

@@ -8,11 +8,11 @@ var texture_pause = preload("res://assets/graphics/pause.png")
 
 @onready var coin_hover: TextureRect = $CoinHover
 @onready var board: Board = $Board
-@onready var player_one_name: Label = %Player1
-@onready var player_two_name: Label = %Player2
+@onready var player_one_name: Label = %PlayerOne
+@onready var player_two_name: Label = %PlayerTwo
 
-@onready var player_1_score_label: Label = $Player1Score
-@onready var player_2_score_label: Label = $Player2Score
+@onready var player_1_score_label: Label = $VBoxPlayer1/Player1Score
+@onready var player_2_score_label: Label = $VBoxPlayer2/Player2Score
 @onready var games_left_label: Label = $GamesLeft
 
 @onready var play_pause: TextureButton = %PlayPause
@@ -40,14 +40,14 @@ func _ready() -> void:
 	_game_reset()
 	games_left_label.text = str(GameManager.games_left)
 	coin_hover.new_spawn_pos.connect(_spawn)
-	player_one_name.set_text(WebsocketServer.get_player_one().name)
-	player_two_name.set_text(WebsocketServer.get_player_two().name)
+	Designer.set_label_text(player_one_name, WebsocketServer.get_player_one().name, 30, 250.0)
+	Designer.set_label_text(player_two_name, WebsocketServer.get_player_two().name, 30, 250.0)
 	_send_update_state()
 
 	WebsocketServer.player_timeout.timeout.connect(player_got_timeout)
 
 func player_got_timeout():
-	_game_is_over(int(WebsocketServer.player_one_active) + 1)
+	_game_is_over([int(WebsocketServer.player_one_active) + 1])
 
 func _game_reset():
 	current_turn = 1
@@ -116,11 +116,13 @@ func finish():
 	board.init()
 	for child in get_children():
 		if child is Coin or child is Bomb:
-			child.queue_free()
+			child.free()
 	if GameManager.games_left > 0:
 		start()
 		_send_update_state()
 	else:
+		paused = false
+		get_tree().paused = false
 		get_tree().change_scene_to_file("res://scenes/results/results.tscn")
 
 func _spawn(position: Vector2, column: int) -> void:
@@ -139,7 +141,7 @@ func _spawn(position: Vector2, column: int) -> void:
 		new_coin.end_movement.connect(_update_game)
 	else:
 		new_coin.is_wrong()
-		_game_is_over(int(not WebsocketServer.player_one_active) + 1)
+		_game_is_over([int(not WebsocketServer.player_one_active) + 1])
 		player_1_score_label.text = str(GameManager.player_1_score)
 		player_2_score_label.text = str(GameManager.player_2_score)
 		games_left_label.text = str(GameManager.games_left)
@@ -181,10 +183,10 @@ func _detonate(row: int, col: int):
 		
 	await all_explosions_done
 	_update_coin_rows(exploding_coins)
-	var winner = board.detect_winner_full_scan()
-	if winner != 0:
+	var winners = board.detect_winner_full_scan()
+	if winners.size() > 0:
 		_highlight(board.get_winning_coins())
-		_game_is_over(winner)
+		_game_is_over(winners)
 		
 	GameManager.setState(GameManager.GameState.NEXT)
 	if WebsocketServer.player_one_active and WebsocketServer.is_player_one_bot() or not WebsocketServer.player_one_active and WebsocketServer.is_player_two_bot():
@@ -203,7 +205,7 @@ func _update_game(column: int):
 	var won = board.is_winner(player_id)
 	if won:
 		_highlight(board.get_winning_coins())
-		_game_is_over(player_id)
+		_game_is_over([player_id])
 	else:
 		_next()
 	
@@ -239,8 +241,8 @@ func _on_play_pause_pressed() -> void:
 		pause_label.visible = false
 		play_pause.texture_normal = texture_pause
 	
-func _game_is_over(player_id: int) -> void:
-	GameManager.won(player_id)
+func _game_is_over(player_ids: Array[int]) -> void:
+	GameManager.won(player_ids)
 	player_1_score_label.text = str(GameManager.player_1_score)
 	player_2_score_label.text = str(GameManager.player_2_score)
 	games_left_label.text = str(GameManager.games_left)

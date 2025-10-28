@@ -56,18 +56,21 @@ func has_winner_from_cell(row: int, col: int) -> int:
 		coin_list.append_array(_count_in_direction(row, col, direction, player_id))
 		coin_list.append_array(_count_in_direction(row, col, -direction, player_id))
 		if coin_list.size() >= winning_streak:
-			winning_coins = coin_list
+			winning_coins.append_array(coin_list)
 			return player_id
 	return 0
 	
-func detect_winner_full_scan() -> int:
+func detect_winner_full_scan() -> Array[int]:
+	var winners: Array[int] = []
 	for r in range(max_rows):
 		for c in range(max_columns):
 			if board[r][c] != 0:
-				var res = has_winner_from_cell(r, c)
-				if res != 0:
-					return res
-	return 0
+				var player_id = board[r][c]
+				if not winners.has(player_id) and player_id != 0 and player_id != 99:
+					var res = has_winner_from_cell(r, c)
+					if res == player_id:
+						winners.append(res)	
+	return winners
 	
 func _count_in_direction(row: int, col: int, direction: Vector2, player_id: int) -> Array[Vector2]:
 	var count_list: Array[Vector2] = []

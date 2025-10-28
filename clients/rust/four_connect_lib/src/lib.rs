@@ -53,16 +53,18 @@ impl FourConnectBot {
         let (message_sender, message_receiver) = mpsc::channel::<Trigger>(64);
         let (consumer_sender, mut consumer_receiver) = mpsc::channel::<PlayState>(64);
 
+        let bot_name = name.to_string();
         tokio::spawn(async move {
             while let Some(play_state) = consumer_receiver.recv().await {
                 #[cfg(feature = "enable-tracing")]
                 trace!("Received play_state for handling: {play_state:?}");
+                if play_state.bot == bot_name {
+                    let response = consumer.handle_message(play_state).await;
 
-                let response = consumer.handle_message(play_state).await;
-
-                if let Err(error) = message_sender.send(response).await {
-                    error!("{error}");
-                };
+                    if let Err(error) = message_sender.send(response).await {
+                        error!("{error}");
+                    };
+                }
             }
         });
 

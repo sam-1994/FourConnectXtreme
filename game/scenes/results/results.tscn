@@ -28,6 +28,8 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "<Win Message>"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="games_played" type="Label" parent="result"]
 unique_name_in_owner = true
@@ -39,38 +41,50 @@ text = "games_played: 50"
 [node name="summary" type="HBoxContainer" parent="result"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 8
+alignment = 1
 
 [node name="player" type="VBoxContainer" parent="result/summary"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 10
 
 [node name="player1_name" type="Label" parent="result/summary/player"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "player_1 wins:"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="player2_name" type="Label" parent="result/summary/player"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "player_2 wins:"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="wins" type="VBoxContainer" parent="result/summary"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 10
 
 [node name="player1_wins" type="Label" parent="result/summary/wins"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "<player_1_wins>"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="player2_wins" type="Label" parent="result/summary/wins"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "<player2_wins>"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="continue_button" type="Button" parent="result"]
 layout_mode = 2
@@ -82,5 +96,6 @@ text = "Continue"
 stream = ExtResource("3_iaiks")
 volume_db = -5.0
 autoplay = true
+parameters/looping = true
 
 [connection signal="pressed" from="result/continue_button" to="." method="_on_continue_button_pressed"]

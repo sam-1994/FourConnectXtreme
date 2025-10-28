@@ -53,9 +53,10 @@ func set_next_starting_player():
 func setState(state: GameState): 
 	self.current_state = state
 	
-func won(player_id: int):
+func won(player_ids: Array[int]):
+	for id in player_ids:
+		if id == 1:
+			GameManager.player_1_score += 1
+		else:
+			GameManager.player_2_score += 1
 	GameManager.games_left -= 1
-	if player_id == 1:
-		GameManager.player_1_score += 1
-	else:
-		GameManager.player_2_score += 1
