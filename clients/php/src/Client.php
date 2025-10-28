@@ -29,14 +29,13 @@ final readonly class Client
         private WebsocketHandshake $handshake
     ) {}
 
-    public static function create(Bot $bot, int $port, string $name): self
+    public static function create(Bot $bot, int $port): self
     {
         $encoders   = [new JsonEncoder()];
         $extractor  = new PropertyInfoExtractor([], [new PhpDocExtractor()]);
         $normalizer = [new ObjectNormalizer(null, null, null, $extractor), new ArrayDenormalizer()];
         $serializer = new Serializer($normalizer, $encoders);
-        $handshake  = new WebsocketHandshake('ws://localhost:' . $port . '/' . $name);
-
+        $handshake  = new WebsocketHandshake('ws://localhost:' . $port . '/' . $bot->name());
 
         return new self($bot, $serializer, $handshake);
     }
@@ -53,12 +52,17 @@ final readonly class Client
         foreach ($connection as $message) {
             $payload = $message->buffer();
             try {
+                /**@var PlayState $playstate */
                 $playstate = $this->serializer->deserialize($payload, PlayState::class, 'json');
             } catch (Exception|ExceptionInterface) {
                 printf("Received `%s` instead of playstate\n", $payload);
 
                 continue;
             }
+            if ($playstate->bot() !== $this->bot->name()) {
+                continue;
+            }
+
             printf("Received playstate: \n%s\n\n", $playstate);
             $column = $this->bot->run($playstate);
             printf("Sending column: %s\n", $column);
