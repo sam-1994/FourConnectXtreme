@@ -37,6 +37,7 @@ hervorzugehen! :)
     - Rust
     - Go
     - TypeScript
+    - Dart
     - PHP
 
 ## Das Game starten
