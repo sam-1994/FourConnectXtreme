@@ -7,4 +7,6 @@ namespace Fourconnectxtreme\Php;
 interface Bot
 {
     public function run(PlayState $playState): int;
+
+    public function name(): string;
 }

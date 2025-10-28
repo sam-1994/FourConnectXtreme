@@ -13,4 +13,10 @@ final readonly class Champion implements Bot
     {
         // TODO: implement me!
     }
+
+    public function name(): string
+    {
+        // TODO: Change my name!
+        return 'ChampionPHP';
+    }
 }

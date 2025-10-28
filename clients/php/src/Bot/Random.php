@@ -20,4 +20,9 @@ final readonly class Random implements Bot
     {
         return random_int(0, 6);
     }
+
+    public function name(): string
+    {
+        return 'Rando_McRandRand';
+    }
 }
