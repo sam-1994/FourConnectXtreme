@@ -22,22 +22,22 @@ namespace CsClient.CsharpClient
         /// Verbindet mit Zielurl
         /// </summary>
         /// <param name="uri"></param>
-        /// <returns>Das Taskobjekt welches die asynchrone ausfuehrung repraesentiert</returns>
+        /// <returns>Das Taskobjekt welches die asynchrone Ausfuehrung repraesentiert</returns>
         public async Task Connect(string uri)
         {
-            await Connect(new Uri(uri + "/" + _bot.Name));
+            await Connect(new Uri(Path.Combine(uri, _bot.Name)));
         }
 
         /// <summary>
         /// Verbindet mit Zielurl
         /// </summary>
         /// <param name="uri"></param>
-        /// <returns>Das Taskobjekt welches die asynchrone ausfuehrung repraesentiert</returns>
+        /// <returns>Das Taskobjekt welches die asynchrone Ausfuehrung repraesentiert</returns>
         public async Task Connect(Uri uri) 
         {
             _webSocket?.Dispose();
             _webSocket = new();
-            _webSocket.ConnectAsync(uri, CancellationToken.None).Wait();
+            await _webSocket.ConnectAsync(uri, CancellationToken.None);
 
             OnOpen?.Invoke(this, EventArgs.Empty);
             await Listen();
@@ -46,7 +46,7 @@ namespace CsClient.CsharpClient
         /// <summary>
         /// Trennt die Verbindung zum Connect 4 Server.
         /// </summary>
-        /// <returns>Das Taskobjekt welches die asynchrone ausfuehrung repraesentiert</returns>
+        /// <returns>Das Taskobjekt welches die asynchrone Ausfuehrung repraesentiert</returns>
         public async Task Disconnect()
         {
             if (_webSocket is not null)
@@ -61,7 +61,7 @@ namespace CsClient.CsharpClient
         /// Sendet Nachricht an den Connect 4 Server.
         /// </summary>
         /// <param name="message"></param>
-        /// <returns>Das Taskobjekt welches die asynchrone ausfuehrung repraesentiert</returns>
+        /// <returns>Das Taskobjekt welches die asynchrone Ausfuehrung repraesentiert</returns>
         public async Task Send(string message)
         {
 #if DEBUG
@@ -81,23 +81,23 @@ namespace CsClient.CsharpClient
 
         private async Task Listen()
         {
-            ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[1024]);
+            var memoryBuffer = new Memory<byte>(new byte[1024]);
             while (_webSocket?.State == WebSocketState.Open)
             {
                 using (var ms = new MemoryStream())
                 {
-                    WebSocketReceiveResult result;
+                    ValueWebSocketReceiveResult result;
                     do
                     {
-                        result = _webSocket.ReceiveAsync(buffer, CancellationToken.None).Result;
+                        result = await _webSocket.ReceiveAsync(memoryBuffer, CancellationToken.None);
                         if (result.MessageType == WebSocketMessageType.Close)
                         {
-                            _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).Wait();
+                            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                             break;
                         }
                         else
                         {
-                            ms.Write(buffer.Array!, buffer.Offset, result.Count);
+                            await ms.WriteAsync(memoryBuffer[..result.Count]);
                         }
                     }
                     while (!result.EndOfMessage);
@@ -105,14 +105,14 @@ namespace CsClient.CsharpClient
                     ms.Seek(0, SeekOrigin.Begin);
                     if (result.MessageType == WebSocketMessageType.Binary)
                     {
-                        using (var reader = new StreamReader(ms, Encoding.UTF8))
+                        using (var reader = new StreamReader(ms, _encoding))
                         {
                             var stringData = await reader.ReadToEndAsync();
 #if DEBUG
                             Console.WriteLine($"Receive: {stringData}");
 #endif
                             OnMessage?.Invoke(this, stringData);
-                            HandleMessage(stringData);
+                            await HandleMessage(stringData);
                         }
                     }
                 }
@@ -120,7 +120,7 @@ namespace CsClient.CsharpClient
 
         }
 
-        private void HandleMessage(string stringData)
+        private async Task HandleMessage(string stringData)
         {
             try
             {
@@ -131,8 +131,8 @@ namespace CsClient.CsharpClient
                 // React only to messages when it's your turn
                 if (_bot.Name == playState.Bot)
                 {
-                    string reaction = "{\"column\":" + JsonSerializer.Serialize(_bot.Play(playState)) + "}";
-                    Send(reaction).Wait();
+                    string reaction = $"{{\"column\":{JsonSerializer.Serialize(_bot.Play(playState))}}}";
+                    await Send(reaction);
                 }
             }
             catch (Exception ex)
