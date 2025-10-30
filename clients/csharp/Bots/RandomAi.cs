@@ -8,7 +8,7 @@ namespace CsClient.Bots
         public string Name { get; }
 
         /// <inheritdoc/>
-        public int Play(PlayState? playState)
+        public int Play(PlayState playState)
         {
             Random random = new Random();
             return random.Next(0, 7);

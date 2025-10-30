@@ -15,7 +15,7 @@ namespace CsClient.Bots.Internal
         /// </summary>
         /// <param name="playState">Der aktuelle Spielzustand (Board, Bomben, aktuelle Runde)</param>
         /// <returns>Die gewünschte Spalte für den nächsten Chip</returns>
-        int Play(PlayState? playState);
+        int Play(PlayState playState);
 
     }
 }
