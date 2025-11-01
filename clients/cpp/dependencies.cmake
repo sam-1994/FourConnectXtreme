@@ -56,4 +56,10 @@ function(four_connect_extreme_setup_dependencies)
             GITHUB_REPOSITORY gabime/spdlog
             VERSION 1.16.0
     )
+
+    CPMAddPackage(
+            NAME ARGUABLY
+            GITHUB_REPOSITORY mgerhold/arguably
+            VERSION 0.1.10
+    )
 endfunction()

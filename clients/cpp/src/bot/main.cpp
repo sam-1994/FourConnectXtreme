@@ -1,9 +1,16 @@
 #include "base_bot.hpp"
 
+#include <arguably.hpp>
+#include <iostream>
+#include <memory>
 #include <magic_enum/magic_enum.hpp>
 #include <random>
 #include <spdlog/spdlog.h>
+#include <string_view>
 
+/* The demo bot implements a very simple strategy:
+ * It randomly selects a column and places its coin there,
+ * retrying until an empty column is found. */
 class DemoBot final : public BaseBot {
 private:
     std::mt19937_64 m_random_engine{ std::random_device{}() };
@@ -22,30 +29,56 @@ public:
     }
 };
 
-[[nodiscard]] constexpr std::optional<int> parse(std::string_view const s) {
-    auto result = int{};
-    auto const [pointer, errc] = std::from_chars(s.data(), s.data() + s.length(), result, 10);
-    if (pointer != s.data() + s.length() or errc != std::errc{}) {
-        return std::nullopt;
+/* The following macro has to list all available bot classes. Each
+ * class that is listed here, can be instantiated by providing its name
+ * via the command line argument '--bot' or '-b'.
+ * E.g.: Running the executable with `--bot DemoBot --name my_bot` will
+ *       instantiate the `DemoBot` class and use `my_bot` as bot name.
+ */
+#define BOT_LIST                          \
+    /* Register your bot classes here: */ \
+    X(DemoBot)
+
+[[nodiscard]] static auto instantiate_bot(std::string_view const bot_class, std::string name, int const port)
+        -> std::unique_ptr<BaseBot> {
+#define X(BotClass)                                               \
+    if (bot_class == #BotClass) {                                 \
+        return std::make_unique<BotClass>(std::move(name), port); \
     }
-    return result;
+    BOT_LIST
+#undef X
+    return nullptr;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2) {
-        spdlog::error("Usage: {} <bot_name> [port=5051]", argv[0]);
+int main(int, char** const argv) {
+    auto parser = arguably::create_parser()
+                          .optionally_named<'b', "bot", "The bot class to instantiate", std::string>("")
+                          .optionally_named<'n', "name", "Bot name", std::string>("")
+                          .optionally_named<'p', "port", "Port number", int>(5051)
+                          .create();
+    parser.parse(argv);
+
+    if (not parser) {
+        parser.print_help(std::cerr << "Usage:\n");
         return EXIT_FAILURE;
     }
-    auto const bot_name = std::string{ argv[1] };
-    auto port = 5051;
-    if (argc >= 3) {
-        auto const parsed_port = parse(argv[2]);
-        if (not parsed_port.has_value()) {
-            spdlog::error("Invalid port number: {}", argv[2]);
-            return EXIT_FAILURE;
-        }
-        port = parsed_port.value();
+
+    if (not parser.was_provided<'b'>()) {
+        parser.print_help(std::cerr << "Error: You must provide a bot class.\nUsage:\n");
+        return EXIT_FAILURE;
     }
-    auto bot = DemoBot{ bot_name, port };
-    bot.play();
+
+    if (not parser.was_provided<'n'>()) {
+        parser.print_help(std::cerr << "Error: You must provide a bot name.\nUsage:\n");
+        return EXIT_FAILURE;
+    }
+
+    auto const port = parser.get<'p'>();
+    auto const bot = instantiate_bot(parser.get<'b'>(), parser.get<'n'>(), port);
+    if (bot == nullptr) {
+        std::cerr << "Error: Unknown bot class: " << parser.get<'b'>() << "\n";
+        return EXIT_FAILURE;
+    }
+    bot->play();
+    return EXIT_SUCCESS;
 }
