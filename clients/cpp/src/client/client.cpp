@@ -79,7 +79,7 @@ auto Client::handle_message(std::string const& message_string) -> tl::optional<M
         auto const parsed = nlohmann::json::parse(message_string);
         message = parsed.get<json_message::Message>();
     } catch (nlohmann::json::parse_error const& exception) {
-        spdlog::error("Failed to parse JSON message: {}", exception.what());
+        // Since this is presumably the ping message, we just ignore it.
         return tl::nullopt;
     } catch (nlohmann::json::type_error const& exception) {
         spdlog::error("JSON type error: {}", exception.what());
