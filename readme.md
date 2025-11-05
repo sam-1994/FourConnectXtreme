@@ -20,11 +20,22 @@ hervorzugehen! :)
 
 ## Teilnahmebedingungen
 
-- Implementierung der vorgegebenen Bot Schnittstelle (in der Sprache deiner Wahl)
-- Der Bot ist lauffähig und bedient korrekt die Schnittstelle
-- Der Bot spielt einen gültigen Zug innerhalb einer festgelegten Zeit (Timeout = 700 Millisekunden)
 - Der Bot ist von dir
-- Deine Einreichung überschreitet nicht ein Limit von 2MB für Code + Config des Bots
+- Implementierung der vorgegebenen Bot Schnittstelle (in der Sprache deiner Wahl)
+- Der Bot ist im entsprechenden Client lauffähig und bedient korrekt die Schnittstelle
+- Der Bot spielt einen gültigen Zug innerhalb einer festgelegten Zeit (Timeout = 700 Millisekunden)
+- Deine Einreichung erfüllt die Thread Regel und alle folgenden Resourcenlimits:
+  - Datei(en)größe: <= 2MB für Code + Config des Bots
+  - RAM: 512MB 
+  - GPU: nicht erlaubt
+
+**Thread-Regel:**\
+Der Bot läuft standardmäßig im Hauptthread (durch den Turnier-Client aufgerufen).
+Es ist erlaubt, höchstens einen zusätzlichen Thread zu starten,
+der parallel zur Hauptausführung arbeitet.
+Weitere Threads oder Prozesse dürfen nicht erzeugt werden.
+
+Runtime-interne Threads (z. B. Garbage Collector, JIT, Timer, IO) sind davon ausgenommen.
 
 ### Was beinhaltet das Repository?
 
@@ -37,6 +48,9 @@ hervorzugehen! :)
     - Rust
     - Go
     - TypeScript
+    - Dart
+    - PHP
+    - C++
 
 ## Das Game starten
 
