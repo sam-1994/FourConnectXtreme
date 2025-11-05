@@ -12,15 +12,18 @@ export interface Forecast {
 export class SamuAi2 implements BotAI {
   private name: string = 'SamuAi2';
 
-  private forecastCache = new Map<string, Forecast>();
-  private scoreCache = new Map<string, number>();
+  private forecastCache: Map<string, Forecast> = new Map();
+  private scoreCache: Map<string, number> = new Map();
 
   getName(): string {
     return this.name;
   }
 
   play(currentGameState: PlayState): number {
+    this.forecastCache = new Map<string, Forecast>();
+    this.scoreCache = new Map<string, number>();
     const bestForecast = this.forecastBestPlayState(currentGameState, currentGameState.coin_id, 5);
+
     if (!bestForecast || bestForecast.turns.length === 0) {
       return Math.floor(Math.random() * 7);
     }
@@ -71,7 +74,7 @@ export class SamuAi2 implements BotAI {
         } else {
           const nextForecast = this.forecastBestPlayState(nextState, 3 - player, iterations - 1) as Forecast;
           const myScore = nextForecast ? this.calculateBoardScore(nextForecast.state, player) : 0;
-          const opponentScore =  nextForecast ? this.calculateBoardScore(nextForecast.state, 3 - player) : Infinity;
+          const opponentScore = nextForecast ? this.calculateBoardScore(nextForecast.state, 3 - player) : Infinity;
           const scoreDiff = myScore - opponentScore;
           forecasts.push({
             turns: [{player, column}, ...nextForecast.turns],
@@ -112,7 +115,7 @@ export class SamuAi2 implements BotAI {
       }
     }, null);
 
-    if(forecast) {
+    if (forecast) {
       this.forecastCache.set(cacheKey, forecast);
     }
     return forecast;
