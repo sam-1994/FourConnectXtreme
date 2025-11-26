@@ -478,6 +478,24 @@ describe('SamuAI-2 Bot', () => {
       }]);
       expect(forecastedState.score).toBe(-70);
     });
+
+    it('does not crash on full board', () => {
+      const board = [
+        [1, 2, 2, 1, 2, 1, 2],
+        [2, 1, 1, 2, 2, 1, 2],
+        [1, 2, 2, 1, 1, 2, 1],
+        [2, 1, 1, 1, 2, 1, 0],
+        [1, 2, 2, 1, 2, 2, 0],
+        [2, 1, 1, 2, 1, 1, 0],
+      ];
+      const state = makeState(board);
+      const forecastedState = ai.forecastBestPlayState(state, 2, 4) as Forecast;
+      expect(forecastedState.turns).toEqual([
+        {player: 2, column: 6},
+        {player: 1, column: 6},
+        {player: 2, column: 6},
+      ]);
+    });
   })
 
   describe('calculateNextState', () => {
@@ -900,7 +918,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(0);
     });
 
@@ -913,7 +931,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 1, 0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(0);
     });
 
@@ -926,7 +944,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(1);
     });
 
@@ -939,7 +957,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(1);
     });
 
@@ -952,7 +970,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 1, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(1);
     });
 
@@ -965,7 +983,7 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(2);
     });
 
@@ -978,8 +996,21 @@ describe('SamuAI-2 Bot', () => {
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
       ];
-      const score = ai.checkWinner(makeState(board));
+      const score = ai.checkWinner(makeState(board), 1);
       expect(score).toBe(3);
+    });
+
+    it('should recognize if the board is full', () => {
+      const board = [
+        [1, 2, 2, 1, 2, 1, 2],
+        [2, 1, 1, 2, 2, 1, 2],
+        [1, 2, 2, 1, 1, 2, 1],
+        [2, 1, 1, 1, 2, 1, 2],
+        [1, 2, 2, 1, 2, 2, 1],
+        [2, 1, 1, 2, 1, 1, 2],
+      ];
+      const score = ai.checkWinner(makeState(board), 1);
+      expect(score).toBe(2);
     });
   })
 

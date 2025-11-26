@@ -41,7 +41,7 @@ export class SamuAi2 implements BotAI {
       return this.forecastCache.get(cacheKey)!;
     }
 
-    if (iterations === 0 || this.checkWinner(state) !== 0) {
+    if (iterations === 0 || this.checkWinner(state, player) !== 0) {
       const myScore = this.calculateBoardScore(state, player);
       const opponentScore = this.calculateBoardScore(state, 3 - player);
       const result = {
@@ -73,16 +73,20 @@ export class SamuAi2 implements BotAI {
           });
         } else {
           const nextForecast = this.forecastBestPlayState(nextState, 3 - player, iterations - 1) as Forecast;
-          const myScore = nextForecast ? this.calculateBoardScore(nextForecast.state, player) : 0;
-          const opponentScore = nextForecast ? this.calculateBoardScore(nextForecast.state, 3 - player) : Infinity;
-          const scoreDiff = myScore - opponentScore;
-          forecasts.push({
-            turns: [{player, column}, ...nextForecast.turns],
-            state: nextForecast.state,
-            score: scoreDiff,
-            myScore,
-            opponentScore,
-          });
+
+          if (nextForecast) {
+            const myScore = nextForecast ? this.calculateBoardScore(nextForecast.state, player) : 0;
+            const opponentScore = nextForecast ? this.calculateBoardScore(nextForecast.state, 3 - player) : Infinity;
+            const scoreDiff = myScore - opponentScore;
+            forecasts.push({
+              turns: [{player, column}, ...nextForecast.turns],
+              state: nextForecast.state,
+              score: scoreDiff,
+              myScore,
+              opponentScore,
+            });
+            forecasts.push(null);
+          }
         }
       } else {
         forecasts.push(null);
@@ -140,7 +144,7 @@ export class SamuAi2 implements BotAI {
       }
     }
 
-    if (this.checkWinner(newState) !== 0) {
+    if (this.checkWinner(newState, player) !== 0) {
       return newState;
     }
 
@@ -200,7 +204,7 @@ export class SamuAi2 implements BotAI {
     };
   }
 
-  checkWinner(state: PlayState): number {
+  checkWinner(state: PlayState, player: number): number {
     let winner = 0;
 
     const directions = [
@@ -239,6 +243,12 @@ export class SamuAi2 implements BotAI {
       }
     }
 
+    if(winner === 0) {
+      if(state.board[state.board.length - 1].every(cell => cell !== 0)) {
+        winner = 3 - player;
+      }
+    }
+
     return winner;
   }
 
@@ -248,7 +258,7 @@ export class SamuAi2 implements BotAI {
       return this.scoreCache.get(cacheKey)!;
     }
 
-    const checkWinner = this.checkWinner(state);
+    const checkWinner = this.checkWinner(state, player);
     if (checkWinner === player || checkWinner === 3) {
       this.scoreCache.set(cacheKey, 10000);
       return 10000;
